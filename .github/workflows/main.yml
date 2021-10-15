@@ -1,0 +1,43 @@
+name: Rss to kindle
+
+on:
+  schedule:
+    - cron: "0 12 * * *"
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - run: pip install -r requirements.txt
+      - id: main
+        run: | 
+          OUTPUT=$(python main.py)
+          echo "::set-output name=OUTPUT::$OUTPUT"
+      - if: steps.main.outputs.OUTPUT == 1
+        run: |
+          chmod +x kindlegen
+          ./kindlegen -unicode content/content.opf
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
+          git add setting.json
+          git commit -m "update novel_list"
+          git push
+      - if: steps.main.outputs.OUTPUT == 1
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.qq.com
+          server_port: 465
+          username: ${{secrets.MAIL_USERNAME}}
+          password: ${{secrets.MAIL_PASSWORD}}
+          subject: Convert
+          to: ${{secrets.KINDLE_EMAIL}}
+          from: rss2kindle <${{secrets.MAIL_USERNAME}}>
+          secure: true
+          body: "Job of ${{github.repository}} completed successfully!"
+          attachments: content/content.mobi

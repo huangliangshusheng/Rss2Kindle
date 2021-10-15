@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  Rss2Kindle:
+    image: python:3.9.7-bullseye
+    network_mode: "host"
+    working_dir: /Rss2Kindle
+    volumes:
+      - ../:/Rss2Kindle:cached
+    tty: true

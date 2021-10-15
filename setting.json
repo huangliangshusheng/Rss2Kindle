@@ -1,0 +1,21 @@
+{
+    "title": "Rss",
+    "feed_list": [
+        {
+            "title": "华尔街日报",
+            "url": "https://feedx.net/rss/wsj.xml"
+        },
+        {
+            "title": "NHKニュース",
+            "url": "https://www3.nhk.or.jp/rss/news/cat0.xml"
+        },
+        {
+            "title": "路透中文",
+            "url": "https://feedx.net/rss/reuters.xml"
+        },
+        {
+            "title": "Engadget",
+            "url": "https://www.engadget.com/rss-full.xml"
+        }
+    ]
+}

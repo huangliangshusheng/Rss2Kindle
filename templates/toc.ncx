@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE ncx PUBLIC "-//NISO//DTD ncx 2005-1//EN" "http://www.daisy.org/z3986/2005/ncx-2005-1.dtd">
+<ncx xmlns:mbp="http://mobipocket.com/ns/mbp" xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1"
+    xml:lang="en-GB">
+
+    <head>
+        <meta content="{{magazine.id}}" name="dtb:uid" />
+        <meta content="2" name="dtb:depth" />
+        <meta content="0" name="dtb:totalPageCount" />
+        <meta content="0" name="dtb:maxPageNumber" />
+    </head>
+    <docTitle>
+        <text>{{magazine.title}}</text>
+    </docTitle>
+    <navMap>
+        <navPoint class="periodical">
+            <navLabel>
+                <text>目录</text>
+            </navLabel>
+            <content src="toc.html" />
+            {% for section in magazine.section_list %}
+            <navPoint class="section">
+                <navLabel>
+                    <text>{{section.title}}</text>
+                </navLabel>
+                <content src="{{section.article_list[0].id}}.html#section" />
+                {% for article in section.article_list %}
+                <navPoint class="article">
+                    <navLabel>
+                        <text>{{article.title}}</text>
+                    </navLabel>
+                    <content src="{{article.id}}.html#title" />
+                </navPoint>
+                {% endfor %}
+            </navPoint>
+            {% endfor %}
+        </navPoint>
+    </navMap>
+</ncx>

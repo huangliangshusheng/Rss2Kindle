@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='utf-8'?>
+<package xmlns="http://www.idpf.org/2007/opf" version="2.0" unique-identifier="{{magazine.id}}">
+    <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
+        <dc-metadata>
+            <dc:title>{{magazine.title}} {{magazine.date}}</dc:title>
+            <dc:language>zh-CN</dc:language>
+            <dc:subject>杂志</dc:subject>
+            <dc:Identifier id="uid">{{magazine.id}}</dc:Identifier>
+            <dc:date>{{magazine.date}}</dc:date>
+        </dc-metadata>
+        <x-metadata>
+            <output content-type="application/x-mobipocket-subscription-magazine" encoding="utf-8" />
+            <EmbeddedCover>cover.png</EmbeddedCover>
+        </x-metadata>
+    </metadata>
+    <manifest>
+        <item href="toc.html" media-type="application/xhtml+xml" id="toc" />
+        <item href="toc.ncx" media-type="application/x-dtbncx+xml" id="ncx" />
+        {% for section in magazine.section_list %}
+        {% for article in section.article_list %}
+        <item href='{{article.id}}.html' media-type='application/xhtml+xml' id='{{article.id}}' />
+        {% endfor %}
+        {% endfor %}
+        {% for image in magazine.image_list %}
+        <item href="{{image.name}}" media-type="{{image.media_type}}" id="{{image.id}}" />
+        {% endfor %}
+        <item href="cover.png" media-type="image/jpeg" id="cover_img" />
+    </manifest>
+    <spine toc="ncx">
+        <itemref idref="toc" />
+        {% for section in magazine.section_list %}
+        {% for article in section.article_list %}
+        <itemref idref='{{article.id}}' />
+        {% endfor %}
+        {% endfor %}
+    </spine>
+    <guide>
+        <reference href="toc.html" type="toc" title="Table of Contents" />
+    </guide>
+</package>

@@ -1,0 +1,20 @@
+<html>
+
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+    <title>目录</title>
+</head>
+
+<body>
+    <h1>目录</h1>
+    {% for section in magazine.section_list %}
+    <h4 height="1em">{{section.title}}</h4>
+    <ul>
+        {% for article in section.article_list %}
+        <li><a href='{{article.id}}.html'>{{article.title}}</a></li>
+        {% endfor %}
+    </ul>
+    {% endfor %}
+</body>
+
+</html>
