@@ -33,6 +33,9 @@
         <itemref idref='{{article.id}}' />
         {% endfor %}
         {% endfor %}
+        {% for image in magazine.image_list %}
+        <itemref idref='{{image.id}}' />
+        {% endfor %}
     </spine>
     <guide>
         <reference href="toc.html" type="toc" title="Table of Contents" />

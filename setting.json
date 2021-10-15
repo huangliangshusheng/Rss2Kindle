@@ -1,1 +1,24 @@
-{"title": "Rss", "feed_list": [{"title": "华尔街日报", "url": "https://feedx.net/rss/wsj.xml", "last_link": "https://cn.wsj.com/amp/articles/%E4%B8%B0%E7%94%B0%E5%92%8C%E5%AE%9D%E9%92%A2%E8%A2%AB%E6%97%A5%E6%9C%AC%E5%88%B6%E9%93%81%E4%BB%A5%E4%BE%B5%E7%8A%AF%E4%B8%93%E5%88%A9%E4%B8%BA%E7%94%B1%E5%91%8A%E4%B8%8A%E6%B3%95%E5%BA%AD-11634288411"}, {"title": "NHKニュース", "url": "https://www3.nhk.or.jp/rss/news/cat0.xml", "last_link": "http://www3.nhk.or.jp/news/html/20211015/k10013308501000.html"}, {"title": "路透中文", "url": "https://feedx.net/rss/reuters.xml", "last_link": "https://cn.reuters.com/article/toyota-chip-shortage-car-production-1015-idCNKBS2H50U7"}, {"title": "Engadget", "url": "https://www.engadget.com/rss-full.xml", "last_link": "https://www.engadget.com/tesla-car-insurance-texas-real-time-driving-behavior-103501859.html?src=rss"}]}
+{
+    "title": "Rss",
+    "feed_list": [
+        {
+            "title": "华尔街日报",
+            "url": "https://feedx.net/rss/wsj.xml"
+        },
+        {
+            "title": "NHKニュース",
+            "url": "https://www3.nhk.or.jp/rss/news/cat0.xml",
+            "last_link": "http://www3.nhk.or.jp/news/html/20211015/k10013308501000.html"
+        },
+        {
+            "title": "路透中文",
+            "url": "https://feedx.net/rss/reuters.xml",
+            "last_link": "https://cn.reuters.com/article/toyota-chip-shortage-car-production-1015-idCNKBS2H50U7"
+        },
+        {
+            "title": "Engadget",
+            "url": "https://www.engadget.com/rss-full.xml",
+            "last_link": "https://www.engadget.com/tesla-car-insurance-texas-real-time-driving-behavior-103501859.html?src=rss"
+        }
+    ]
+}

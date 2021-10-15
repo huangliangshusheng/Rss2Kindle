@@ -26,7 +26,7 @@ jobs:
           git config user.name "GitHub Actions Bot"
           git config user.email "<>"
           git add setting.json
-          git commit -m "update novel_list"
+          git commit -m "update"
           git push
       - if: steps.main.outputs.OUTPUT == 1
         uses: dawidd6/action-send-mail@v3
