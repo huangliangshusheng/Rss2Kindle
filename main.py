@@ -92,13 +92,18 @@ async def create_image(img):
     url = img.get("src")
     content, media_type = await download_image(url)
 
-    name = f"{id}.{media_type.split('/')[-1]}"
+    name = f"{id}.{postfix(media_type)}"
     async with aiofiles.open(f"content/{name}", "wb") as f:
         await f.write(content)
 
     img.set("src", name)
     image_list.append(Image(id, name, media_type))
 
+
+def postfix(media_type):
+    if media_type == "image/jpeg":
+        return "jpg"
+    return media_type.split('/')[-1]
 
 def clean_html(html):
     cleaner = Cleaner(allow_tags=["div", "p", "figure", "img", "figcaption"],
