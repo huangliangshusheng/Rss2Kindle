@@ -170,7 +170,7 @@ async def async_map(func, iterables):
 def find(func, iterables):
     for index, entry in enumerate(iterables):
         if func(entry):
-            return iterables[:index + 1]
+            return iterables[:index]
 
     return iterables
 

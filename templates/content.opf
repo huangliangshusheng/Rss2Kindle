@@ -24,7 +24,7 @@
         {% for image in magazine.image_list %}
         <item href="{{image.name}}" media-type="{{image.media_type}}" id="{{image.id}}" />
         {% endfor %}
-        <item href="cover.png" media-type="image/jpeg" id="cover_img" />
+        <item href="cover.png" media-type="image/png" id="cover_img" />
     </manifest>
     <spine toc="ncx">
         <itemref idref="toc" />
