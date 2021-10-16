@@ -3,6 +3,8 @@ import json
 import time
 import uuid
 from collections import namedtuple
+from PIL import Image
+from io import BytesIO
 
 import aiofiles
 import aiohttp
@@ -12,7 +14,6 @@ from jinja2 import Environment, FileSystemLoader
 from lxml.html.clean import Cleaner
 from tenacity import retry, stop_after_attempt, wait_random
 
-Image = namedtuple("Image", "id, name, media_type")
 Article = namedtuple("Article", "id, title, description, image_list")
 Section = namedtuple("Section", "title, article_list")
 Magazine = namedtuple("Magazine", "id, title, date, section_list")
@@ -69,9 +70,14 @@ async def write_toc_ncx(magazine):
 async def create_section(feed):
     title = feed["title"]
     last_link = feed.get("last_link")
-    max_item = feed.get("max_item", 15)
+    max_item = feed.get("max_item", 25)
 
-    parser = feedparser.parse(await get_feed(feed["url"]))
+    try:
+        rss_xml = await get_feed(feed["url"])
+    except:
+        return None
+
+    parser = feedparser.parse(rss_xml)
     item_list = parse_entries(parser.entries[:max_item], last_link)
     if not item_list:
         return None
@@ -134,8 +140,8 @@ async def sanitize_content(rawdata):
     image_list = await async_map(
         lambda img: create_image(img.get("src")), img_list
     )
-    for i, image in enumerate(image_list):
-        img_list[i].set("src", image.name)
+    for i, img in enumerate(img_list):
+        img.set("src", f"{image_list[i]}.gif")
     content = lxml.html.tostring(parser, encoding="unicode")
 
     return content, image_list
@@ -162,13 +168,13 @@ async def write_article(article_id, title, content):
 
 
 async def create_image(url):
-    content, media_type = await download_image(url)
-
-    image_id = uuid.uuid4().hex
-    image_name = f"{image_id}.{media_type.split('/')[-1]}"
-    await save_image(image_name, content)
-
-    return Image(image_id, image_name, media_type)
+    try:
+        content = await download_image(url)
+        image_id = uuid.uuid4().hex
+        await save_image(image_id, content)
+        return image_id
+    except:
+        return "404"
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_random(min=1, max=3))
@@ -177,14 +183,18 @@ async def download_image(url):
         if(response.status > 399):
             raise IOError("connect error!")
 
-        content = await response.read()
-        media_type = response.headers["Content-Type"]
-        return content, media_type
+        return await response.read()
 
 
-async def save_image(image_name, content):
-    async with aiofiles.open(f"content/{image_name}", "wb") as f:
-        await f.write(content)
+async def save_image(image_id, content):
+    image = Image.open(BytesIO(content))
+    image.thumbnail((600, 800))
+    image = image.convert("L")
+    image_stream = BytesIO()
+    image.save(image_stream, format="GIF")
+
+    async with aiofiles.open(f"content/{image_id}.gif", "wb") as f:
+        await f.write(image_stream.getvalue())
 
 
 async def async_map(func, *iterables):
