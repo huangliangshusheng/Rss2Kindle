@@ -2,8 +2,9 @@ name: Rss to kindle
 
 on:
   schedule:
-    - cron: "0 11 * * *"
-    - cron: "0 23 * * *"
+    - cron: "0 4 * * *"
+    - cron: "0 12 * *"
+    - cron: "0 20 * * *"
   workflow_dispatch:
 
 jobs:

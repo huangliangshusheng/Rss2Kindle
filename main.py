@@ -69,7 +69,7 @@ async def write_toc_ncx(magazine):
 async def create_section(feed):
     title = feed["title"]
     last_link = feed.get("last_link")
-    max_item = feed.get("max_item", 25)
+    max_item = feed.get("max_item", 15)
 
     parser = feedparser.parse(await get_feed(feed["url"]))
     item_list = parse_entries(parser.entries[:max_item], last_link)
