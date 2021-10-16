@@ -1,1 +1,21 @@
-{"title": "Rss", "feed_list": [{"title": "华尔街日报", "url": "https://feedx.net/rss/wsj.xml", "last_link": "https://cn.wsj.com/amp/articles/%E4%B8%AD%E5%9B%BD%E7%94%B5%E4%BF%A1%E8%AE%BE%E5%A4%87%E5%B7%A8%E5%A4%B4%E4%B8%AD%E5%85%B4%E9%80%9A%E8%AE%AF%E4%B8%8E%E7%BE%8E%E5%9B%BD%E6%B3%95%E9%99%A2%E6%8C%87%E6%B4%BE%E7%9A%84%E7%9B%91%E7%9D%A3%E5%91%98%E4%BA%A7%E7%94%9F%E7%9F%9B%E7%9B%BE-11634296512"}, {"title": "NHKニュース", "url": "https://www3.nhk.or.jp/rss/news/cat0.xml", "last_link": "http://www3.nhk.or.jp/news/html/20211015/k10013309531000.html"}, {"title": "路透中文", "url": "https://feedx.net/rss/reuters.xml", "last_link": "https://cn.reuters.com/article/china-pboc-official-inflation-liquidity-idCNKBS2H50XG"}, {"title": "Engadget", "url": "https://www.engadget.com/rss-full.xml", "last_link": "https://www.engadget.com/rodes-wireless-go-ii-can-now-be-controlled-via-android-and-i-os-113547787.html?src=rss"}]}
+{
+    "title": "Rss",
+    "feed_list": [
+        {
+            "title": "华尔街日报",
+            "url": "https://feedx.net/rss/wsj.xml"
+        },
+        {
+            "title": "NHKニュース",
+            "url": "https://www3.nhk.or.jp/rss/news/cat0.xml"
+        },
+        {
+            "title": "路透社",
+            "url": "https://rsshub.rssforever.com/reuters/channel/cn/generalnews"
+        },
+        {
+            "title": "Engadget",
+            "url": "https://rsshub.rssforever.com/engadget/cn"
+        }
+    ]
+}

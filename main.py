@@ -13,130 +13,33 @@ from lxml.html.clean import Cleaner
 from tenacity import retry, stop_after_attempt, wait_random
 
 Image = namedtuple("Image", "id, name, media_type")
-Article = namedtuple("Article", "id, title")
+Article = namedtuple("Article", "id, title, description, image_list")
 Section = namedtuple("Section", "title, article_list")
-Magazine = namedtuple("Magazine", "id, title, date, section_list, image_list")
-
-image_list = []
+Magazine = namedtuple("Magazine", "id, title, date, section_list")
 
 
 async def create_Magazine(setting):
     title = setting.get("title", "Rss")
-    date = time.strftime("%Y-%m-%d")
     feed_list = setting["feed_list"]
 
     section_list = await async_map(create_section, feed_list)
-    if section_list:
-        magazine = Magazine(
-            uuid.uuid4().hex, title, date, section_list, image_list
-        )
-        await asyncio.gather(
-            write_content(magazine),
-            write_toc_html(magazine),
-            write_toc_ncx(magazine)
-        )
-        return magazine
-
-    return None
-
-
-async def create_section(feed):
-    title = feed["title"]
-    last_link = feed.get("last_link")
-    max_item = feed.get("max_item", 25)
-
-    parser = feedparser.parse(await get_feed(feed["url"]))
-    entries = find(
-        lambda entry: entry.link == last_link,
-        parser.entries[:max_item]
-    )
-    if not entries:
+    if not section_list:
         return None
 
-    article_list = await async_map(
-        lambda entry: create_article(entry), entries
+    magazine = Magazine(
+        uuid.uuid4().hex, title, time.strftime("%Y-%m-%d"), section_list
     )
+    await write_magazine(magazine)
 
-    if entries:
-        feed["last_link"] = entries[0].link
-
-    return Section(title, article_list)
+    return magazine
 
 
-async def create_article(entry):
-    id = uuid.uuid4().hex
-    title = entry.title
-    rawdata = entry.get("description", None)
-    if not rawdata:
-        rawdata = entry.content[0].value
-
-    cleaned_html = clean_html(rawdata)
-    if not cleaned_html:
-        return None
-
-    parser = lxml.html.fromstring(cleaned_html)
-    img_list = parser.xpath("//img")
-    await async_map(
-        lambda img: create_image(img), img_list
+async def write_magazine(magazine):
+    await asyncio.gather(
+        write_content(magazine),
+        write_toc_html(magazine),
+        write_toc_ncx(magazine)
     )
-
-    content = lxml.html.tostring(parser, encoding="unicode")
-
-    await write_article(id, title, content)
-
-    return Article(id, title)
-
-
-async def create_image(img):
-    id = uuid.uuid4().hex
-    url = img.get("src")
-    content, media_type = await download_image(url)
-
-    name = f"{id}.{postfix(media_type)}"
-    async with aiofiles.open(f"content/{name}", "wb") as f:
-        await f.write(content)
-
-    img.set("src", name)
-    image_list.append(Image(id, name, media_type))
-
-
-def postfix(media_type):
-    if media_type == "image/jpeg":
-        return "jpg"
-    return media_type.split('/')[-1]
-
-def clean_html(html):
-    cleaner = Cleaner(allow_tags=["div", "p", "figure", "img", "figcaption"],
-                      safe_attrs_only=True, safe_attrs=["src"])
-    return cleaner.clean_html(html)
-
-
-@retry(stop=stop_after_attempt(3), wait=wait_random(min=1, max=3))
-async def get_feed(url):
-    async with aiohttp.request("GET", url) as response:
-        if(response.status > 399):
-            raise IOError("connect error!")
-
-        return await response.text()
-
-
-@retry(stop=stop_after_attempt(3), wait=wait_random(min=1, max=3))
-async def download_image(url):
-    async with aiohttp.request("GET", url) as response:
-        if(response.status > 399):
-            raise IOError("connect error!")
-
-        content = await response.read()
-        media_type = response.headers["Content-Type"]
-        return content, media_type
-
-
-async def write_article(id, title, content):
-    env = Environment(loader=FileSystemLoader("templates"), enable_async=True)
-    template = env.get_template("article.html")
-    article = await template.render_async(title=title, content=content)
-    async with aiofiles.open(f"content/{id}.html", "w") as f:
-        await f.write(article)
 
 
 async def write_content(magazine):
@@ -163,16 +66,129 @@ async def write_toc_ncx(magazine):
         await f.write(toc_ncx)
 
 
-async def async_map(func, iterables):
-    return tuple(filter(None, await asyncio.gather(*map(func, iterables))))
+async def create_section(feed):
+    title = feed["title"]
+    last_link = feed.get("last_link")
+    max_item = feed.get("max_item", 25)
+
+    parser = feedparser.parse(await get_feed(feed["url"]))
+    item_list = parse_entries(parser.entries[:max_item], last_link)
+    if not item_list:
+        return None
+    feed["last_link"] = item_list[0][2]
+
+    article_list = await async_map(
+        lambda item: create_article(item[0], item[1]), item_list
+    )
+    if not article_list:
+        return None
+
+    return Section(title, article_list)
 
 
-def find(func, iterables):
-    for index, entry in enumerate(iterables):
-        if func(entry):
-            return iterables[:index]
+@retry(stop=stop_after_attempt(3), wait=wait_random(min=1, max=3))
+async def get_feed(url):
+    async with aiohttp.request("GET", url) as response:
+        if(response.status > 399):
+            raise IOError("connect error!")
 
-    return iterables
+        return await response.text()
+
+
+def parse_entries(entries, last_link):
+    item_list = []
+    for entry in entries:
+        link = entry.link
+        if last_link == link:
+            break
+
+        title = entry.title
+        rawdata = entry.get("description")
+        if not rawdata:
+            rawdata = entry.content[0].value
+        item_list.append((title, rawdata, link))
+
+    return item_list
+
+
+async def create_article(title, rawdata):
+    content, image_list = await sanitize_content(rawdata)
+
+    description = extract_description(content)
+    if not description:
+        return None
+
+    article_id = uuid.uuid4().hex
+    await write_article(article_id, title, content)
+
+    return Article(article_id, title, description, image_list)
+
+
+async def sanitize_content(rawdata):
+    cleaner = Cleaner(allow_tags=["div", "p", "figure", "img", "figcaption"],
+                      safe_attrs_only=True, safe_attrs=["src"])
+    cleaned_html = cleaner.clean_html(rawdata)
+
+    parser = lxml.html.fromstring(cleaned_html)
+    img_list = parser.xpath("//img")
+    image_list = await async_map(
+        lambda img: create_image(img.get("src")), img_list
+    )
+    for i, image in enumerate(image_list):
+        img_list[i].set("src", image.name)
+    content = lxml.html.tostring(parser, encoding="unicode")
+
+    return content, image_list
+
+
+def extract_description(content):
+    cleaner = Cleaner(kill_tags=["figure"])
+    cleaned_html = cleaner.clean_html(content)
+
+    parser = lxml.html.fromstring(cleaned_html)
+    line_list = parser.xpath("//text()")
+
+    if line_list:
+        return line_list[0]
+    return None
+
+
+async def write_article(article_id, title, content):
+    env = Environment(loader=FileSystemLoader("templates"), enable_async=True)
+    template = env.get_template("article.html")
+    html = await template.render_async(title=title, content=content)
+    async with aiofiles.open(f"content/{article_id}.html", "w") as f:
+        await f.write(html)
+
+
+async def create_image(url):
+    content, media_type = await download_image(url)
+
+    image_id = uuid.uuid4().hex
+    image_name = f"{image_id}.{media_type.split('/')[-1]}"
+    await save_image(image_name, content)
+
+    return Image(image_id, image_name, media_type)
+
+
+@retry(stop=stop_after_attempt(3), wait=wait_random(min=1, max=3))
+async def download_image(url):
+    async with aiohttp.request("GET", url) as response:
+        if(response.status > 399):
+            raise IOError("connect error!")
+
+        content = await response.read()
+        media_type = response.headers["Content-Type"]
+        return content, media_type
+
+
+async def save_image(image_name, content):
+    async with aiofiles.open(f"content/{image_name}", "wb") as f:
+        await f.write(content)
+
+
+async def async_map(func, *iterables):
+    return tuple(filter(None, await asyncio.gather(*map(func, *iterables))))
 
 
 def load_json(filename):

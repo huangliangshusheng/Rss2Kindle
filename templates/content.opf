@@ -19,10 +19,10 @@
         {% for section in magazine.section_list %}
         {% for article in section.article_list %}
         <item href='{{article.id}}.html' media-type='application/xhtml+xml' id='{{article.id}}' />
-        {% endfor %}
-        {% endfor %}
-        {% for image in magazine.image_list %}
+        {% for image in article.image_list %}
         <item href="{{image.name}}" media-type="{{image.media_type}}" id="{{image.id}}" />
+        {% endfor %}
+        {% endfor %}
         {% endfor %}
         <item href="cover.png" media-type="image/png" id="cover_img" />
     </manifest>

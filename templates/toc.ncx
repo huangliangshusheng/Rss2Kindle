@@ -30,6 +30,7 @@
                         <text>{{article.title}}</text>
                     </navLabel>
                     <content src="{{article.id}}.html#title" />
+                    <mbp:meta name="description">{{article.description}}</mbp:meta>
                 </navPoint>
                 {% endfor %}
             </navPoint>
