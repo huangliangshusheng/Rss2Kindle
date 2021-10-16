@@ -2,8 +2,8 @@ name: Rss to kindle
 
 on:
   schedule:
-    - cron: "0 12 * * *"
-    - cron: "0 3 * * *"
+    - cron: "0 11 * * *"
+    - cron: "0 23 * * *"
   workflow_dispatch:
 
 jobs:
@@ -22,7 +22,7 @@ jobs:
       - if: steps.main.outputs.OUTPUT == 1
         run: |
           chmod +x kindlegen
-          ./kindlegen -unicode content/content.opf
+          ./kindlegen -unicode -gif content/content.opf
           git config user.name "GitHub Actions Bot"
           git config user.email "<>"
           git add setting.json
