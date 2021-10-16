@@ -1,1 +1,21 @@
-{"title": "Rss", "feed_list": [{"title": "华尔街日报", "url": "https://feedx.net/rss/wsj.xml", "last_link": "https://cn.wsj.com/amp/articles/%E4%B8%AD%E6%A6%82%E8%82%A1%E7%AE%80%E6%8A%A5-%E5%BE%AE%E4%BF%A1-%E6%B2%BB%E7%90%86%E8%A7%86%E9%A2%91%E5%8F%B7-%E6%97%A0%E4%B8%8B%E9%99%90%E5%8D%9A%E7%9C%BC%E7%90%83-%E7%9B%B4%E6%92%AD%E8%A1%8C%E4%B8%BA-11634352910"}, {"title": "NHKニュース", "url": "https://www3.nhk.or.jp/rss/news/cat0.xml", "last_link": "http://www3.nhk.or.jp/news/html/20211016/k10013310161000.html"}, {"title": "路透社", "url": "https://rsshub.rssforever.com/reuters/channel/cn/generalnews"}, {"title": "Engadget", "url": "https://rsshub.rssforever.com/engadget/cn"}]}
+{
+    "title": "Rss",
+    "feed_list": [
+        {
+            "title": "华尔街日报",
+            "url": "https://feedx.net/rss/wsj.xml"
+        },
+        {
+            "title": "NHKニュース",
+            "url": "https://www3.nhk.or.jp/rss/news/cat0.xml"
+        },
+        {
+            "title": "路透社",
+            "url": "https://rsshub.rssforever.com/reuters/channel/cn/generalnews"
+        },
+        {
+            "title": "Engadget",
+            "url": "https://rsshub.rssforever.com/engadget/cn"
+        }
+    ]
+}

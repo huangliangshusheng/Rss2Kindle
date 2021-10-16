@@ -131,7 +131,7 @@ async def create_article(title, rawdata):
 
 
 async def sanitize_content(rawdata):
-    cleaner = Cleaner(allow_tags=["div", "p", "figure", "img", "figcaption"],
+    cleaner = Cleaner(allow_tags=["div", "p", "figure", "img", "figcaption", "strong"],
                       safe_attrs_only=True, safe_attrs=["src"])
     cleaned_html = cleaner.clean_html(rawdata)
 
