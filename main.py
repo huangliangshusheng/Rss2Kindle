@@ -152,7 +152,9 @@ def extract_description(content):
     cleaned_html = cleaner.clean_html(content)
 
     parser = lxml.html.fromstring(cleaned_html)
-    line_list = parser.xpath("//text()")
+    line_list = tuple(filter(
+        None, map(lambda line: line.strip(), parser.xpath("//text()"))
+    ))
 
     if line_list:
         return line_list[0]
